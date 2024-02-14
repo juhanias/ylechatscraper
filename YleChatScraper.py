@@ -119,7 +119,7 @@ class YleChatScraper:
             list[obj]: A list of message objects (dict)
         """
         message_request = self.session.get(
-            f"{self.chat_endpoint}/v1/chats/72-1-08a68a28-b5de-4f2b-9172-43cba48bfd38/comments/before/{time}",
+            f"{self.chat_endpoint}/v1/chats/{self.livefeed_id}/comments/before/{time}",
             params=self.params
         )
         return message_request.json()
