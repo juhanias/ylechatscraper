@@ -34,17 +34,16 @@ class YleChatScraper:
     def start_process(self):
         self.log_message(
             [
-                "[deep_sky_blue1][bold]Yle Chat Scraper[/bold]",
-                "[deep_sky_blue1]by juhanias",
-                "",
-                "[deep_sky_blue4]To get started, please provide the URL of the chat stream you want to scrape.",
-                "",
-                "[deep_sky_blue1]Here's some examples:",
-                "[deep_sky_blue1]* umk24 [deep_sky_blue4](chat.yle.fi/umk24)",
-                "[deep_sky_blue1]* presidentinvaalit2024 [deep_sky_blue4](chat.yle.fi/presidentinvaalit2024)",
-                "",
-                self.underline(),
                 ""
+                "[turquoise2][bold]Yle Chat Scraper[/bold]",
+                "[turquoise2]by Juhani Astikainen",
+                "",
+                "[turquoise2]To get started, please provide the URL of the chat stream you want to scrape.",
+                "",
+                "[turquoise2]Here's some examples:",
+                "[turquoise2]* umk24 [deep_sky_blue4](chat.yle.fi/umk24)",
+                "[turquoise2]* presidentinvaalit24 [deep_sky_blue4](chat.yle.fi/presidentinvaalit24)",
+                "",
             ]
         )
 
@@ -58,7 +57,7 @@ class YleChatScraper:
         # Stream found, carry on
         self.log_message(
             [
-                f"[deep_sky_blue1]Found chat feed with ID:[/deep_sky_blue1] [deep_sky_blue4]{self.livefeed_id}"
+                f"[turquoise2]Found chat feed with ID:[/turquoise2] [deep_sky_blue4]{self.livefeed_id}"
             ]
         )
         
@@ -71,7 +70,7 @@ class YleChatScraper:
             self.messages.extend(messages)
             self.log_message(
                 [
-                    f"[deep_sky_blue1]Scraped {len(self.messages)} total messages from the chat feed."
+                    f"[turquoise2]Scraped {len(self.messages)} total messages from the chat feed."
                 ]
             )
             if len(messages) == 0:
@@ -81,7 +80,7 @@ class YleChatScraper:
             current_timestamp = last_message["creationTime"]
 
         dump_file = open(f"YleChat_{self.url}.csv", "a+", encoding="utf-8")
-        dump_file.write("comment_id,creation_time,likes,author_id,author_nickname,content,reply_to_comment_id\n")
+        dump_file.write("comment_id,creation_time,likes,author_type,author_id,author_nickname,content,reply_to_comment_id\n")
         
         for message in self.messages:
             quote_id = None
@@ -95,9 +94,10 @@ class YleChatScraper:
                 f"{message['commentId']}," +
                 f"{message['creationTime']}," +
                 f"{message['likes']}," +
+                f"{message['role']}," +
                 f"{message['chatUser']['id']}," +
-                f"{message['chatUser']['nick']}," +
-                f"{message['content'].replace(',','')}," +
+                f"{self.csv_sanitize(message['chatUser']['nick'])}," +
+                f"{self.csv_sanitize(message['content'])}," +
                 f"{quote_id}\n"
             )
             
@@ -105,7 +105,7 @@ class YleChatScraper:
         
         self.log_message(
             [
-                f"[deep_sky_blue1]Chat feed scraped successfully. Messages saved to YleChat_{self.url}.csv"
+                f"[medium_spring_green]Chat feed scraped successfully. Messages saved to YleChat_{self.url}.csv"
             ]
         )
             
@@ -187,14 +187,17 @@ class YleChatScraper:
         # Use strftime to convert the datetime object into a formatted string
         return timestamp_obj.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
-    def underline(self):
-        """Returns just a long line. why not
+    def csv_sanitize(self, string):
+        """Sanitizes a string for CSV output.
+
+        Args:
+            string (string): The string to sanitize.
 
         Returns:
-            string: long line :)
+            string: The sanitized string.
         """
-        return "[underline]                                                                              [/underline]"
-
+        return string.replace(",", "").replace("\n", " ").replace("\"", "'")
+    
 if __name__ == "__main__":
     scraper = YleChatScraper()
     scraper.start_process()
