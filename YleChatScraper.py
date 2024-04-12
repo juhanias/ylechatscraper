@@ -80,7 +80,7 @@ class YleChatScraper:
             current_timestamp = last_message["creationTime"]
 
         dump_file = open(f"YleChat_{self.url}.csv", "a+", encoding="utf-8")
-        dump_file.write("comment_id,creation_time,likes,author_type,author_id,author_nickname,content,reply_to_comment_id\n")
+        dump_file.write("comment_id,creation_time,acception_time,likes,author_type,author_id,author_nickname,content,reply_to_comment_id\n")
         
         for message in self.messages:
             quote_id = None
@@ -93,6 +93,7 @@ class YleChatScraper:
             dump_file.write(
                 f"{message['commentId']}," +
                 f"{message['creationTime']}," +
+                f"{message['acceptionTime']}," +
                 f"{message['likes']}," +
                 f"{message['role']}," +
                 f"{message['chatUser']['id']}," +
